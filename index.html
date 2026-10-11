@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="SmartStore — loja virtual demonstrativa com React, TypeScript e Mantine." />
+    <title>SmartStore</title>
+    <script>
+      // GitHub Pages: restaura a rota enviada pelo 404.html (/?/rota&a=1~and~b=2 → /rota?a=1&b=2)
+      // antes de a aplicação iniciar, sem criar entrada extra no histórico.
+      (function (location) {
+        if (location.search[1] !== '/') return;
+        var decoded = location.search
+          .slice(1)
+          .split('&')
+          .map(function (part) {
+            return part.replace(/~and~/g, '&');
+          })
+          .join('?');
+        window.history.replaceState(null, '', location.pathname.slice(0, -1) + decoded + location.hash);
+      })(window.location);
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

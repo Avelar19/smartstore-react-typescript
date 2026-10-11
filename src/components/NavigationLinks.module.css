@@ -1,0 +1,35 @@
+.list {
+  display: flex;
+  gap: var(--mantine-spacing-xs);
+}
+
+.horizontal {
+  flex-direction: row;
+  align-items: center;
+}
+
+.vertical {
+  flex-direction: column;
+}
+
+.link {
+  display: flex;
+  align-items: center;
+  gap: var(--mantine-spacing-xs);
+  padding: 8px 12px;
+  border-radius: var(--mantine-radius-md);
+  color: var(--mantine-color-text);
+  font-size: var(--mantine-font-size-sm);
+  font-weight: 500;
+  text-decoration: none;
+
+  @mixin hover {
+    background-color: var(--mantine-color-default-hover);
+  }
+
+  /* O NavLink do React Router marca a rota ativa com aria-current="page". */
+  &[aria-current='page'] {
+    background-color: var(--mantine-color-indigo-light);
+    color: var(--mantine-color-indigo-light-color);
+  }
+}

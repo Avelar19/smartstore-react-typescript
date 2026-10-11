@@ -1,0 +1,19 @@
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--mantine-color-text);
+  font-size: var(--mantine-font-size-lg);
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.brandIcon {
+  color: var(--mantine-color-indigo-6);
+}
+
+.footer {
+  margin-top: var(--mantine-spacing-xl);
+  padding-block: var(--mantine-spacing-lg);
+  border-top: 1px solid var(--mantine-color-default-border);
+}

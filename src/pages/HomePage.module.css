@@ -1,0 +1,29 @@
+.hero {
+  padding: var(--mantine-spacing-xl);
+  border-radius: var(--mantine-radius-lg);
+  background-image: linear-gradient(
+    135deg,
+    var(--mantine-color-indigo-6) 0%,
+    var(--mantine-color-violet-6) 100%
+  );
+  color: var(--mantine-color-white);
+
+  @media (min-width: $mantine-breakpoint-sm) {
+    padding: calc(var(--mantine-spacing-xl) * 2);
+  }
+}
+
+.heroTitle {
+  max-width: 640px;
+  line-height: 1.15;
+  font-size: rem(30px);
+
+  @media (min-width: $mantine-breakpoint-sm) {
+    font-size: rem(44px);
+  }
+}
+
+.heroText {
+  max-width: 560px;
+  opacity: 0.9;
+}

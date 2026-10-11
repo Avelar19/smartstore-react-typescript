@@ -1,0 +1,95 @@
+name: Deploy (GitHub Pages)
+
+# Publica somente commits da main que passaram na CI: este workflow é disparado quando o
+# workflow "CI" termina e faz checkout exatamente do commit que foi validado (head_sha).
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: read
+
+# Deploys não se sobrepõem; um deploy em andamento não é cancelado.
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build do commit validado
+    # CI aprovada, disparada por push (não por PR) neste mesmo repositório.
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push' &&
+      github.event.workflow_run.head_repository.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    outputs:
+      publish: ${{ steps.latest.outputs.publish }}
+    env:
+      COREPACK_ENABLE_DOWNLOAD_PROMPT: 0
+    steps:
+      - name: Checkout do commit aprovado na CI
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - name: Publicar apenas se ainda for o commit mais recente da main
+        id: latest
+        run: |
+          git fetch --no-tags --depth=1 origin main
+          if [ "$(git rev-parse FETCH_HEAD)" = "${{ github.event.workflow_run.head_sha }}" ]; then
+            echo "publish=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice::A main já avançou; o commit mais novo será publicado pela sua própria CI."
+            echo "publish=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Node.js 24
+        if: steps.latest.outputs.publish == 'true'
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+
+      - name: Yarn Classic 1.22.22 (Corepack)
+        if: steps.latest.outputs.publish == 'true'
+        run: |
+          corepack enable
+          yarn --version
+
+      - name: Instalar dependências
+        if: steps.latest.outputs.publish == 'true'
+        run: yarn install --frozen-lockfile
+
+      - name: Build de produção (base /smartstore-react-typescript/ e 404.html)
+        if: steps.latest.outputs.publish == 'true'
+        run: yarn build
+
+      - name: Configurar GitHub Pages
+        if: steps.latest.outputs.publish == 'true'
+        uses: actions/configure-pages@v6
+
+      - name: Enviar artefato do site
+        if: steps.latest.outputs.publish == 'true'
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: dist
+
+  deploy:
+    name: Publicar no GitHub Pages
+    needs: build
+    if: needs.build.outputs.publish == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v5
