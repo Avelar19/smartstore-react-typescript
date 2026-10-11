@@ -9,7 +9,7 @@ async function fillProductForm(page: Page) {
   await page.getByRole('textbox', { name: 'Descrição' }).fill('Produto cadastrado pelo teste E2E')
   await page.getByRole('combobox', { name: 'Categoria' }).click()
   await page.getByRole('option', { name: 'Notebooks' }).click()
-  await page.getByRole('textbox', { name: 'Preço (US$)' }).fill('1299,9')
+  await page.getByRole('textbox', { name: 'Preço (R$)' }).fill('1299,9')
   await page.getByRole('textbox', { name: 'Estoque' }).fill('7')
 }
 
@@ -59,7 +59,7 @@ test.describe('Fluxo 3 — cadastro administrativo', () => {
     const row = page.getByRole('table', { name: 'Produtos cadastrados nesta sessão' }).getByRole('row', { name: /Notebook E2E/ })
     await expect(row).toContainText('Novo (local)')
     await expect(row).toContainText('Notebooks')
-    await expect(row).toContainText(/US\$\s1\.299,90/)
+    await expect(row).toContainText(/R\$\s1\.299,90/)
     await expect(page.getByRole('note').filter({ hasText: 'Modo demonstração' })).toContainText(
       'não persiste nenhuma alteração',
     )

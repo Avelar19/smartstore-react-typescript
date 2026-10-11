@@ -35,7 +35,7 @@ export async function fillProductForm(user: UserEvent, data: ProductFormData) {
   const fields: [keyof ProductFormData, string][] = [
     ['title', 'Nome do produto'],
     ['description', 'Descrição'],
-    ['price', 'Preço (US$)'],
+    ['price', 'Preço (R$)'],
     ['stock', 'Estoque'],
   ]
   for (const [key, label] of fields) {

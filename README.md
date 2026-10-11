@@ -1,6 +1,6 @@
 # SmartStore
 
-> **Aplicação (GitHub Pages):** <https://avelar19.github.io/smartstore-react-typescript/> — _publicação em validação_
+> **Aplicação (GitHub Pages):** <https://avelar19.github.io/smartstore-react-typescript/>
 >
 > **Repositório:** <https://github.com/Avelar19/smartstore-react-typescript>
 
@@ -100,13 +100,13 @@ scripts/        servidor que emula o GitHub Pages
 - **O catálogo público não reflete as alterações simuladas.** Ele sempre mostra os dados reais da API.
 - **Id fixo nos cadastros.** Todo cadastro recebe o id `195` da API, por isso cada produto criado ganha um identificador local próprio (`local-1`, `local-2`…). Esses produtos não existem na API (`PUT`/`DELETE` retornariam 404), então editá-los ou excluí-los é feito apenas no estado local.
 - **Busca e categoria não se combinam.** `/products/search` ignora `category` e `/products/category/:slug` ignora `q`. O catálogo trata os dois filtros como exclusivos, para manter a contagem e a paginação corretas.
-- **Moeda.** A API não define moeda; os preços são exibidos em **dólares americanos (US$)**, sem conversão.
+- **Preços demonstrativos em reais.** A DummyJSON não define moeda. Os valores são **demonstrativos** e exibidos em **reais (R$)** exatamente como recebidos, **sem conversão cambial**: o valor `1099.99` da API aparece como `R$ 1.099,99`. Só a apresentação usa `Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' })`; os números recebidos e os enviados à API (cadastro e edição) não são alterados.
 
 ## Testes automatizados
 
 | Tipo | Ferramentas | Quantidade |
 |---|---|---|
-| Unitários e de integração | Vitest + React Testing Library + user-event | **246 testes** em 32 arquivos |
+| Unitários e de integração | Vitest + React Testing Library + user-event | **252 testes** em 32 arquivos |
 | Ponta a ponta | Playwright (Chromium headless) | **23 testes** em 6 arquivos |
 
 - **Cobertura** (`yarn test:coverage`): 98,8% das instruções, 96,0% dos ramos, 100% das funções e 99,9% das linhas. Testes, fixtures e os arquivos de inicialização não entram no cálculo.
@@ -134,6 +134,21 @@ Executa em todo `push` e `pull_request`, na seguinte ordem: checkout, Node.js 24
 
 **Configuração necessária no GitHub** (uma vez): *Settings → Pages → Build and deployment → Source: **GitHub Actions***.
 
+### Evidências da publicação
+
+Primeira publicação, a partir do commit `a0812fd` na `main`:
+
+- **CI** ([execução 38169726823](https://github.com/Avelar19/smartstore-react-typescript/actions/runs/38169726823)): ✅ sucesso em 2 min 48 s. No runner, **246 testes Vitest** e **23 testes Playwright** passaram, com Yarn 1.22.22.
+- **Deploy** ([execução 38169920493](https://github.com/Avelar19/smartstore-react-typescript/actions/runs/38169920493)): ✅ sucesso, publicando **o mesmo commit** validado pela CI no ambiente `github-pages`.
+- **Verificação da aplicação publicada**, com a DummyJSON real e sem mocks:
+  - abertura direta de `/products/8`: o GitHub Pages devolve o `404.html`, a URL é restaurada e o produto é exibido com a imagem carregada;
+  - recarregar `/products/8` mantém o produto;
+  - `/products?q=phone` mantém a query e mostra 23 resultados;
+  - `/admin` sem sessão leva ao login; após o login real, volta ao painel; **recarregar `/admin`** restaura a sessão via `GET /auth/me` (200);
+  - logout remove o token;
+  - no celular (390 px), não há rolagem horizontal;
+  - nenhum erro inesperado no console.
+
 ### Links diretos no GitHub Pages (`404.html`)
 
 O GitHub Pages não tem fallback de SPA: um acesso direto a `/smartstore-react-typescript/products/8` receberia um erro 404. A solução segue a técnica do [spa-github-pages](https://github.com/rafgraph/spa-github-pages):
@@ -147,14 +162,16 @@ Esse comportamento é verificado nos testes E2E com um servidor que emula o GitH
 
 ## Proteção da branch `main`
 
-Procedimento a aplicar no GitHub após o primeiro push. Em *Settings → Branches → Add branch ruleset* (ou *Branch protection rule*), para a branch `main`:
+A `main` está **protegida** pelo ruleset **"Proteção da main"** (ativo, sem *bypass*, nem para administradores):
 
-1. **Require a pull request before merging:** alterações entram somente por PR (opcionalmente com 1 aprovação).
-2. **Require status checks to pass:** marque o check **`Validação`** (job do workflow CI) e **Require branches to be up to date before merging**.
-3. **Block force pushes** e **Restrict deletions**.
-4. Opcional: **Require conversation resolution before merging**.
+1. **Pull request obrigatório.** Nenhuma alteração entra diretamente na `main`. São exigidas zero aprovações, porque o projeto tem um único autor e o GitHub não permite aprovar o próprio PR.
+2. **Check obrigatório `Validação`** (job do workflow CI, vinculado ao app GitHub Actions), com a branch **atualizada** em relação à `main` antes do merge.
+3. **Conversas resolvidas** antes do merge.
+4. **Bloqueio de force push e de exclusão** da `main`.
 
-Com isso, todo código da `main` passou pela CI no PR, e o deploy publica apenas commits aprovados novamente pela CI após o merge.
+Para reproduzir em outro repositório: *Settings → Rules → Rulesets → New branch ruleset*, com alvo na branch padrão e as regras acima.
+
+Com isso, todo código da `main` passa pela CI no PR, e o deploy publica apenas commits aprovados novamente pela CI após o merge.
 
 ## Checklist dos 10 requisitos
 
@@ -167,9 +184,9 @@ Com isso, todo código da `main` passou pela CI no PR, e o deploy publica apenas
 | 5 | Mantine | `MantineProvider`, `AppShell` responsivo, `@mantine/form`, `Pagination`, `Loader`/`Skeleton`, notificações | ✅ Validado |
 | 6 | JWT | `POST /auth/login`, token no `sessionStorage`, sincronização com o contexto, logout, redirecionamento de não autenticados, expiração (`exp`, 401, `/auth/me`) | ✅ Validado (testes e API real) |
 | 7 | Axios e Zod | `src/services/api.ts` com `baseURL` `https://dummyjson.com`, interceptors de requisição (Bearer) e resposta (erros normalizados, 401); schemas `z.object`, tipos com `z.infer`, `safeParse` em todas as respostas; `zod4Resolver`; notificações de erro sem duplicação | ✅ Validado |
-| 8 | Vitest e RTL | 246 testes: renderização, busca, formulários, contexto de autenticação, rotas protegidas, carregamento e erro, interações; consultas semânticas e mocks determinísticos | ✅ Validado |
+| 8 | Vitest e RTL | 252 testes: renderização, busca, formulários, contexto de autenticação, rotas protegidas, carregamento e erro, interações; consultas semânticas e mocks determinísticos | ✅ Validado |
 | 9 | Playwright | 23 testes E2E, incluindo os fluxos obrigatórios (rota protegida → login; busca → detalhes), em modo headless, com respostas da API controladas | ✅ Validado (local e `CI=true`) |
-| 10 | CI/CD e GitHub Pages | Workflows de CI e deploy, `base` do Vite pelo nome do repositório, `404.html` para links diretos, proteção da `main` documentada | ⏳ Implementado e validado localmente; **execução no GitHub e publicação pendentes** |
+| 10 | CI/CD e GitHub Pages | CI em `push`/`pull_request` (typecheck, lint, Vitest, build, Playwright) e deploy que publica só o commit da `main` aprovado na CI; `base` do Vite pelo nome do repositório; `404.html` para links diretos e recarregamento; `main` protegida com PR e CI obrigatórios | ✅ Validado no GitHub (CI e deploy com sucesso; aplicação publicada verificada; ver *Evidências da publicação*) |
 
 ## Uso de inteligência artificial
 
@@ -180,5 +197,5 @@ A IA gerou a maior parte do código, dos testes e desta documentação. Também 
 ## Links
 
 - Repositório: <https://github.com/Avelar19/smartstore-react-typescript>
-- Aplicação (GitHub Pages): <https://avelar19.github.io/smartstore-react-typescript/> — _publicação em validação_
+- Aplicação (GitHub Pages): <https://avelar19.github.io/smartstore-react-typescript/>
 - API: <https://dummyjson.com> · documentação: <https://dummyjson.com/docs>

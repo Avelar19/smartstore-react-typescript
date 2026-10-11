@@ -84,7 +84,7 @@ export function ProductForm({ categories, initialValues, submitLabel, onSubmit, 
         />
         <Group grow align="flex-start" preventGrowOverflow={false}>
           <NumberInput
-            label="Preço (US$)"
+            label="Preço (R$)"
             withAsterisk
             min={0}
             decimalScale={2}

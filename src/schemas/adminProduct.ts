@@ -29,7 +29,7 @@ export function createProductFormSchema(categorySlugs: readonly string[]) {
     price: z
       .number({ error: 'Informe o preço.' })
       .positive('O preço deve ser maior que zero.')
-      .max(1_000_000, 'O preço deve ser menor que US$ 1.000.000.'),
+      .max(1_000_000, 'O preço deve ser menor que R$ 1.000.000.'),
     stock: z
       .number({ error: 'Informe o estoque.' })
       .int('O estoque deve ser um número inteiro.')
