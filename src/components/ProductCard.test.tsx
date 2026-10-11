@@ -31,7 +31,7 @@ describe('ProductCard', () => {
 
     expect(screen.getByRole('heading', { name: 'Fone Bluetooth' })).toBeInTheDocument()
     expect(screen.getByText('Acessórios para celular')).toBeInTheDocument()
-    expect(screen.getByText(/US\$\s59,90/)).toBeInTheDocument()
+    expect(screen.getByText(/R\$\s59,90/)).toBeInTheDocument()
     expect(screen.getByText('Avaliação 4,3 de 5')).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Ver detalhes de Fone Bluetooth' })).toHaveAttribute(
       'href',

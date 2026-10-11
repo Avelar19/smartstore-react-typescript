@@ -26,7 +26,7 @@ test.describe('Fluxo 1 — catálogo e detalhes', () => {
     await expect(page.getByRole('heading', { level: 1, name: 'iPhone 13 Pro' })).toBeVisible()
     await expect(page).toHaveTitle('iPhone 13 Pro | SmartStore')
     await expect(page.getByText('Smartphones', { exact: true })).toBeVisible()
-    await expect(page.getByText(/US\$\s1\.099,99/)).toBeVisible()
+    await expect(page.getByText(/R\$\s1\.099,99/)).toBeVisible()
     await expect(page.getByText('56 unidades em estoque')).toBeVisible()
 
     const mainImage = page.getByRole('img', { name: 'iPhone 13 Pro' })

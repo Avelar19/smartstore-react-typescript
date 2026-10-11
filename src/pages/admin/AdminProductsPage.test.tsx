@@ -39,7 +39,7 @@ describe('Listagem administrativa', () => {
 
     const row = await findProductRow('MacBook Pro 14')
     expect(within(row).getByText('Notebooks')).toBeInTheDocument()
-    expect(within(row).getByText(/US\$\s1\.999,99/)).toBeInTheDocument()
+    expect(within(row).getByText(/R\$\s1\.999,99/)).toBeInTheDocument()
     expect(within(row).getByText('9')).toBeInTheDocument()
     expect(within(row).getByRole('link', { name: 'Editar MacBook Pro 14' })).toHaveAttribute(
       'href',

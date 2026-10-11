@@ -1,7 +1,7 @@
 import { Avatar, Badge, Button, Group, Paper, SimpleGrid, Skeleton, Stack, Text, Title } from '@mantine/core'
 import {
   IconCategory,
-  IconCurrencyDollar,
+  IconCurrencyReal,
   IconPackage,
   IconPackageOff,
   IconPlus,
@@ -69,7 +69,7 @@ export function AdminDashboardPage() {
           />
           <StatCard label="Unidades em estoque" value={integerFormatter.format(stats.totalStock)} icon={IconStack2} />
           <StatCard label="Produtos esgotados" value={integerFormatter.format(stats.outOfStock)} icon={IconPackageOff} />
-          <StatCard label="Preço médio" value={formatPrice(stats.averagePrice)} icon={IconCurrencyDollar} />
+          <StatCard label="Preço médio" value={formatPrice(stats.averagePrice)} icon={IconCurrencyReal} />
           <StatCard label="Avaliação média" value={`${formatRating(stats.averageRating)} / 5`} icon={IconStar} />
         </SimpleGrid>
         <Text size="xs" c="dimmed">

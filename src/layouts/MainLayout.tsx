@@ -185,8 +185,8 @@ export function MainLayout() {
         <Box component="footer" className={classes.footer}>
           <Container size="xl">
             <Text size="sm" c="dimmed" ta="center">
-              SmartStore — projeto acadêmico de pós-graduação. Dados de demonstração da DummyJSON; preços em
-              dólares americanos (US$).
+              SmartStore — projeto acadêmico de pós-graduação. Dados de demonstração da DummyJSON; preços
+              demonstrativos exibidos em reais (R$), sem conversão cambial.
             </Text>
           </Container>
         </Box>
